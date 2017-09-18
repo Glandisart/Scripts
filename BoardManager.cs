@@ -13,8 +13,8 @@ public class BoardManager : MonoBehaviour
 	private int selectionX = -1;
 	private int selectionY = -1; // Coordonnées de l'emplacement de la souris
 
-	public List<GameObject> cards; // Liste des cartes en jeu
-	private List<GameObject> activeCards = new List<GameObject>();// Je sais pas en fait
+	public List<GameObject> cards; // Liste des cartes existantes
+	private List<GameObject> activeCards = new List<GameObject>();// Liste des cartes présentes dans le jeu
 
 	public struct IntInt{
 		public IntInt(int xvalue, int yvalue){
@@ -34,12 +34,14 @@ public class BoardManager : MonoBehaviour
 	{
 		UpdateSelection ();
 		DrawBoard ();
-
-		if (Input.GetMouseButton (0) ) {
-			if(selectionX>0 && selectionY>0){
+		//Debug.Log (selectionX.ToString() + "  " + selectionY.ToString());
+		if (Input.GetMouseButtonDown (0)) {
+			//Debug.Log ("click");
+			if(selectionX>=0 && selectionY>=0){
 				if (selectedCard == null) {
 					//select card
 					SelectCard(selectionX,selectionY);
+					//Debug.Log(selectedCard.ToString());
 				} else {
 					//move card
 					MoveCard(selectionX,selectionY);
@@ -48,17 +50,24 @@ public class BoardManager : MonoBehaviour
 		}
 	}
 	private void SelectCard(int x, int y){
+		//Debug.Log ("1");
 		if (CardBoard [x, y] == null) 
 			return;
+		//Debug.Log ("2");
 		if (CardBoard [x, y].IsBlue != isBlueTurn)
 			return;
+		//Debug.Log ("3");
 		selectedCard = CardBoard [x, y];
-		
+		//Debug.Log (selectedCard.ToString ());
 	}
 	private void MoveCard(int x, int y){
 		if (selectedCard.CanMoveTo (x, y)) {
-		
+			CardBoard[selectedCard.CurrentX, selectedCard.CurrentY] = null;
+			selectedCard.transform.position = GetTileCenter (x, y);
+			CardBoard [x, y] = selectedCard;
+			isBlueTurn = !isBlueTurn;
 		}
+		selectedCard = null;
 	}
 
 	private void Start(){ // Fonction qui s'éxecute au lancement
@@ -135,12 +144,16 @@ public class BoardManager : MonoBehaviour
 	}
 
 	private void GetCardsPositions (){
-		cardsIndexes = new List<int>(new int[]{0,1,2,3});
+		cardsIndexes = new List<int>(new int[]{0,1,2,3,4,5,6,7});
 		cardsPlaces = new List<IntInt> ();
 		cardsPlaces.Add (new IntInt (1, 1));
 		cardsPlaces.Add (new IntInt (1, 2));
 		cardsPlaces.Add (new IntInt (1, 3));
 		cardsPlaces.Add (new IntInt (1, 4));
+		cardsPlaces.Add (new IntInt (2, 1));
+		cardsPlaces.Add (new IntInt (2, 2));
+		cardsPlaces.Add (new IntInt (2, 3));
+		cardsPlaces.Add (new IntInt (2, 4));
 	}
 
 

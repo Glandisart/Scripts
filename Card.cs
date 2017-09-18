@@ -13,6 +13,8 @@ public abstract class Card : MonoBehaviour {
 	}
 
 	public virtual bool CanMoveTo(int x, int y){
+		/*if (BoardManager.CardBoard [x, y] != null)
+			return false;*/
 		return true;
 	}
 }
