@@ -168,7 +168,7 @@ public class BoardManager : MonoBehaviour
 }
 
 
-// video 2 16min45
+// test
 
 
 
