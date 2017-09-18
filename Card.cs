@@ -6,15 +6,16 @@ public abstract class Card : MonoBehaviour {
 	public int CurrentX{ get; set;}
 	public int CurrentY{ get; set;}
 	public bool IsBlue;
+	public int Deplacement=1;
 
 	public void SetPosition(int x, int y){
 		CurrentX = x;
 		CurrentY = y;
 	}
 
-	public virtual bool CanMoveTo(int x, int y){
+	public virtual bool[,] PossibleMoves(){
 		/*if (BoardManager.CardBoard [x, y] != null)
 			return false;*/
-		return true;
+		return new bool[10,10];
 	}
 }
