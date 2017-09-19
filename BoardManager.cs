@@ -67,12 +67,39 @@ public class BoardManager : MonoBehaviour
 	}
 	private void MoveCard(int x, int y){
 		if (allowedMoves[x,y]) {
-			CardBoard[selectedCard.CurrentX, selectedCard.CurrentY] = null;
+			if (CardBoard [x, y] == null) {
+				CardBoard[selectedCard.CurrentX, selectedCard.CurrentY] = null;
+				selectedCard.transform.position = GetTileCenter (x, y);
+				selectedCard.SetPosition (x, y);
+				CardBoard [x, y] = selectedCard;
+			}
+			else  {
+				if (selectedCard.WinsWhenAttacks (CardBoard [x, y]) == "1") {
+					//Destroy an ennemy card
+					activeCards.Remove (CardBoard [x, y].gameObject);
+					Destroy(CardBoard[x,y].gameObject);
+					CardBoard[selectedCard.CurrentX, selectedCard.CurrentY] = null;
+					selectedCard.transform.position = GetTileCenter (x, y);
+					selectedCard.SetPosition (x, y);
+					CardBoard [x, y] = selectedCard;
+				} else if (selectedCard.WinsWhenAttacks (CardBoard [x, y]) == "0") {
+					activeCards.Remove (selectedCard.gameObject);
+					Destroy(selectedCard.gameObject);
+				} else {
+					activeCards.Remove (CardBoard [x, y].gameObject);
+					Destroy(CardBoard[x,y].gameObject);
+					activeCards.Remove (selectedCard.gameObject);
+					Destroy(selectedCard.gameObject);
+				}
+				/*CardBoard[selectedCard.CurrentX, selectedCard.CurrentY] = null;
 			selectedCard.transform.position = GetTileCenter (x, y);
 			selectedCard.SetPosition (x, y);
 			CardBoard [x, y] = selectedCard;
+			isBlueTurn = !isBlueTurn;*/
+			}
 			isBlueTurn = !isBlueTurn;
 		}
+
 		BoardHighlights.Instance.HideHighlights ();
 		selectedCard = null;
 	}
@@ -128,7 +155,7 @@ public class BoardManager : MonoBehaviour
 	}
 
 	private void SpawnCard(int index, int x, int y){
-		Debug.Log (cards.ToArray().Length.ToString());
+		//Debug.Log (cards.ToArray().Length.ToString());
 		GameObject go = Instantiate (cards [index], GetTileCenter(x,y),Quaternion.Euler(0,180,0) ) as GameObject;
 		go.transform.SetParent (transform);
 		CardBoard [x, y] = go.GetComponent<Card> ();

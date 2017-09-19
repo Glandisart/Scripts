@@ -7,10 +7,21 @@ public abstract class Card : MonoBehaviour {
 	public int CurrentY{ get; set;}
 	public bool IsBlue;
 	public int Deplacement;
+	public int Force;
+	public bool Revelee;
 
 	public void SetPosition(int x, int y){
 		CurrentX = x;
 		CurrentY = y;
+	}
+
+	public virtual string WinsWhenAttacks(Card c){
+		if (this.Force > c.Force)
+			return "1";
+		else if (this.Force < c.Force)
+			return "0";
+		else
+			return "1/2";
 	}
 
 	public virtual bool[,] PossibleMoves(){
@@ -18,7 +29,8 @@ public abstract class Card : MonoBehaviour {
 
 		for (int i = 1; i <= Deplacement; i++) {
 			try{
-				if (BoardManager.Instance.CardBoard [CurrentX, CurrentY + i] == null) {
+				Card c = BoardManager.Instance.CardBoard [CurrentX, CurrentY + i];
+				if (c == null || c.IsBlue!=this.IsBlue) {
 					r [CurrentX, CurrentY + i] = true;
 				} else {
 					i = Deplacement + 1;
@@ -28,10 +40,10 @@ public abstract class Card : MonoBehaviour {
 				i = Deplacement + 1;
 			}
 		}
-
 		for (int i = 1; i <= Deplacement; i++) {
 			try{
-				if (BoardManager.Instance.CardBoard [CurrentX, CurrentY - i] == null) {
+				Card c = BoardManager.Instance.CardBoard [CurrentX, CurrentY - i];
+				if (c == null || c.IsBlue!=this.IsBlue) {
 					r [CurrentX, CurrentY - i] = true;
 				} else {
 					i = Deplacement + 1;
@@ -41,10 +53,10 @@ public abstract class Card : MonoBehaviour {
 				i = Deplacement + 1;
 			}
 		}
-
 		for (int i = 1; i <= Deplacement; i++) {
 			try{
-				if (BoardManager.Instance.CardBoard [CurrentX + 1, CurrentY] == null) {
+				Card c = BoardManager.Instance.CardBoard [CurrentX + i , CurrentY];
+				if (c == null || c.IsBlue!=this.IsBlue) {
 					r [CurrentX + i, CurrentY] = true;
 				} else {
 					i = Deplacement + 1;
@@ -54,10 +66,10 @@ public abstract class Card : MonoBehaviour {
 				i = Deplacement + 1;
 			}
 		}
-
 		for (int i = 1; i <= Deplacement; i++) {
 			try{
-				if (BoardManager.Instance.CardBoard [CurrentX - 1, CurrentY] == null) {
+				Card c = BoardManager.Instance.CardBoard [CurrentX - i , CurrentY];
+				if (c == null || c.IsBlue!=this.IsBlue) {
 					r [CurrentX - i, CurrentY] = true;
 				} else {
 					i = Deplacement + 1;
