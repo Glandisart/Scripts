@@ -4,6 +4,9 @@ using UnityEngine;
 // test
 public class BoardManager : MonoBehaviour 
 {
+	public static BoardManager Instance{ get; set; }
+	private bool [,] allowedMoves{ get; set; }
+
 	public Card[,] CardBoard{ get; set; } // Le plateau 
 	private Card selectedCard; // La carte séléctionnée par le joueur 
 
@@ -57,20 +60,25 @@ public class BoardManager : MonoBehaviour
 		if (CardBoard [x, y].IsBlue != isBlueTurn)
 			return;
 		//Debug.Log ("3");
+		allowedMoves = CardBoard[x,y].PossibleMoves();
 		selectedCard = CardBoard [x, y];
+		BoardHighlights.Instance.HighlightAllowedMoves (allowedMoves);
 		//Debug.Log (selectedCard.ToString ());
 	}
 	private void MoveCard(int x, int y){
-		if (selectedCard.CanMoveTo (x, y)) {
+		if (allowedMoves[x,y]) {
 			CardBoard[selectedCard.CurrentX, selectedCard.CurrentY] = null;
 			selectedCard.transform.position = GetTileCenter (x, y);
+			selectedCard.SetPosition (x, y);
 			CardBoard [x, y] = selectedCard;
 			isBlueTurn = !isBlueTurn;
 		}
+		BoardHighlights.Instance.HideHighlights ();
 		selectedCard = null;
 	}
 
 	private void Start(){ // Fonction qui s'éxecute au lancement
+		Instance=this;
 		SpawnAllCards ();
 	}
 
@@ -160,7 +168,7 @@ public class BoardManager : MonoBehaviour
 }
 
 
-// video 2 16min45
+// test
 
 
 
