@@ -4,8 +4,12 @@ using UnityEngine;
 // test
 public class BoardManager : MonoBehaviour 
 {
+	public Deck deckRouge;
+	public Deck deckBleu;
+
 	public int LargeurPlateau = 11;
 	public int HauteurPlateau = 10;
+	public int HauteurTerritoire = 4;
 
 	public static BoardManager Instance{ get; set; }
 	private bool [,] allowedMoves{ get; set; }
@@ -103,7 +107,10 @@ public class BoardManager : MonoBehaviour
 
 	private void Start(){ // Fonction qui s'éxecute au lancement
 		Instance=this;
-		SpawnAllCards ();
+		CardBoard = new Card[LargeurPlateau,HauteurPlateau];
+		SpawnAllObstacles ();
+		SpawnDecks ();
+		//SpawnAllCards ();
 	}
 
 	private void DrawBoard()// Dessine le plateau et retourne là où est la souris
@@ -173,6 +180,38 @@ public class BoardManager : MonoBehaviour
 		SpawnAllObstacles ();
 		for (int i = 0; i < cardsIndexes.Count; i++) {
 			SpawnCard (cardsIndexes [i],cardsPlaces [i].x, cardsPlaces [i].y);
+		}
+	}
+
+	private void SpawnDecks(){
+		CardBoard = new Card[LargeurPlateau,HauteurPlateau];
+		deckBleu.GetCardsAndPlaces ();
+		deckRouge.GetCardsAndPlaces ();
+		//Deck bleu
+		for (int i = 0; i < LargeurPlateau; i++) {
+			for (int j = 0; j < HauteurTerritoire; j++) {
+				try{
+				GameObject go = Instantiate (deckBleu.CardsAndPlaces[i,j].gameObject, GetTileCenter(i,j),Quaternion.Euler(0,180,0) ) as GameObject;
+				go.transform.SetParent (transform);
+				CardBoard [i, j] = go.GetComponent<Card> ();
+				CardBoard [i, j].SetPosition (i, j);
+				activeCards.Add (go);
+				}
+				catch{}
+			}
+		}
+		//Deck rouge
+		for (int i = 0; i < LargeurPlateau; i++) {
+			for (int j = HauteurPlateau - HauteurTerritoire; j < HauteurPlateau; j++) {
+				try{
+					GameObject go = Instantiate (deckRouge.CardsAndPlaces[LargeurPlateau-i-1,HauteurPlateau-j-1].gameObject, GetTileCenter(i,j),Quaternion.Euler(0,180,0) ) as GameObject;
+				go.transform.SetParent (transform);
+				CardBoard [i, j] = go.GetComponent<Card> ();
+				CardBoard [i, j].SetPosition (i, j);
+				activeCards.Add (go);
+				}
+				catch{}
+			}
 		}
 	}
 

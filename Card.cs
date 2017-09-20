@@ -9,6 +9,8 @@ public abstract class Card : MonoBehaviour {
 	public int Deplacement;
 	public int Force;
 	public bool Revelee;
+	public float Valeur;
+	public bool PorteDrapeau;
 
 	public void SetPosition(int x, int y){
 		CurrentX = x;
