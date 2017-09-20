@@ -23,15 +23,6 @@ public class BoardManager : MonoBehaviour
 	public List<GameObject> cards; // Liste des cartes existantes
 	private List<GameObject> activeCards = new List<GameObject>();// Liste des cartes présentes dans le jeu
 
-	public struct IntInt{
-		public IntInt(int xvalue, int yvalue){
-			x=xvalue;
-			y=yvalue;
-		}
-		public int x;
-		public int y;
-	}// une structure qui contient 2 int
-
 	private List<int> cardsIndexes = new List<int>(); // Cartes initialement présentes
 	private List<IntInt> cardsPlaces = new List<IntInt> ();// Emplacement des cartes initialement présentes 
 
