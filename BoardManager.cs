@@ -4,6 +4,9 @@ using UnityEngine;
 // test
 public class BoardManager : MonoBehaviour 
 {
+	public int LargeurPlateau = 11;
+	public int HauteurPlateau = 10;
+
 	public static BoardManager Instance{ get; set; }
 	private bool [,] allowedMoves{ get; set; }
 
@@ -16,6 +19,7 @@ public class BoardManager : MonoBehaviour
 	private int selectionX = -1;
 	private int selectionY = -1; // Coordonnées de l'emplacement de la souris
 
+	public List<GameObject> obstacles;//Liste des obstacles placés sur le plateau
 	public List<GameObject> cards; // Liste des cartes existantes
 	private List<GameObject> activeCards = new List<GameObject>();// Liste des cartes présentes dans le jeu
 
@@ -63,7 +67,7 @@ public class BoardManager : MonoBehaviour
 		allowedMoves = CardBoard[x,y].PossibleMoves();
 		selectedCard = CardBoard [x, y];
 		BoardHighlights.Instance.HighlightAllowedMoves (allowedMoves);
-		//Debug.Log (selectedCard.ToString ());
+		//Debug.Log (selectedCard.Revelee.ToString ());
 	}
 	private void MoveCard(int x, int y){
 		if (allowedMoves[x,y]) {
@@ -82,20 +86,22 @@ public class BoardManager : MonoBehaviour
 					selectedCard.transform.position = GetTileCenter (x, y);
 					selectedCard.SetPosition (x, y);
 					CardBoard [x, y] = selectedCard;
+					selectedCard.Revelee = true;
 				} else if (selectedCard.WinsWhenAttacks (CardBoard [x, y]) == "0") {
 					activeCards.Remove (selectedCard.gameObject);
 					Destroy(selectedCard.gameObject);
+					CardBoard [x, y].Revelee = true;
 				} else {
 					activeCards.Remove (CardBoard [x, y].gameObject);
 					Destroy(CardBoard[x,y].gameObject);
 					activeCards.Remove (selectedCard.gameObject);
 					Destroy(selectedCard.gameObject);
+					try{
+						selectedCard.Revelee=true;
+						CardBoard[x,y].Revelee = true;
+					}
+					catch{}
 				}
-				/*CardBoard[selectedCard.CurrentX, selectedCard.CurrentY] = null;
-			selectedCard.transform.position = GetTileCenter (x, y);
-			selectedCard.SetPosition (x, y);
-			CardBoard [x, y] = selectedCard;
-			isBlueTurn = !isBlueTurn;*/
 			}
 			isBlueTurn = !isBlueTurn;
 		}
@@ -111,21 +117,21 @@ public class BoardManager : MonoBehaviour
 
 	private void DrawBoard()// Dessine le plateau et retourne là où est la souris
 	{
-		Vector2 widthLine = Vector2.right * 10;
-		Vector2 heightLine = Vector2.up * 10;
+		Vector2 widthLine = Vector2.right * LargeurPlateau;
+		Vector2 heightLine = Vector2.up * HauteurPlateau;
 
-		for (int i = 0; i <= 10; i++) 
+		for (int i = 0; i <= HauteurPlateau; i++) 
 		{
 			Vector2 start = Vector2.up * i;
 			Debug.DrawLine (start, start + widthLine);
 
-			for (int j = 0; j <= 10; j++) 
+			for (int j = 0; j <= LargeurPlateau; j++) 
 			{
 				start = Vector2.right * j;
 				Debug.DrawLine (start, start + heightLine);
 			}
 		}
-		//Draw selection
+		//Draw une croix sur la case où il y a la souris
 		if (selectionX >= 0 && selectionY >= 0) {
 			//Debug.Log (selectionX.ToString() + "; " + selectionY.ToString());
 			Debug.DrawLine (Vector2.right * selectionX + Vector2.up * selectionY,
@@ -172,10 +178,28 @@ public class BoardManager : MonoBehaviour
 
 	private void SpawnAllCards(){
 		GetCardsPositions ();
-		CardBoard = new Card[10,10];
+		CardBoard = new Card[LargeurPlateau,HauteurPlateau];
+		SpawnAllObstacles ();
 		for (int i = 0; i < cardsIndexes.Count; i++) {
 			SpawnCard (cardsIndexes [i],cardsPlaces [i].x, cardsPlaces [i].y);
 		}
+	}
+
+	public void SpawnObstacle(int x, int y){
+		GameObject go = Instantiate(obstacles [0], GetTileCenter(x,y),Quaternion.Euler(0,180,0) ) as GameObject;
+		go.transform.SetParent (transform);
+		CardBoard [x, y] = go.GetComponent<Card> ();
+		CardBoard [x, y].SetPosition (x, y);
+	}
+	public void SpawnAllObstacles(){
+		SpawnObstacle (3, 4);
+		SpawnObstacle (4, 4);
+		SpawnObstacle (6, 4);
+		SpawnObstacle (7, 4);
+		SpawnObstacle (3, 5);
+		SpawnObstacle (4, 5);
+		SpawnObstacle (6, 5);
+		SpawnObstacle (7, 5);
 	}
 
 	private void GetCardsPositions (){

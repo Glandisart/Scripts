@@ -24,62 +24,36 @@ public abstract class Card : MonoBehaviour {
 			return "1/2";
 	}
 
-	public virtual bool[,] PossibleMoves(){
-		bool[,] r = new bool[10, 10];
+	public virtual bool[,] LigneDroitePossibleMoves(bool[,] r, int bLargeur0Hauteur1, int bHautDroite1BasGaucheMoins1){
+		bool[,] r2 = new bool[BoardManager.Instance.LargeurPlateau, BoardManager.Instance.HauteurPlateau];
+		r2 = r;
+		for (int i = 1; i <= Deplacement; i++) {
+			try{
+				Card c = BoardManager.Instance.CardBoard [CurrentX + (1-bLargeur0Hauteur1)*bHautDroite1BasGaucheMoins1*i, CurrentY + bLargeur0Hauteur1*bHautDroite1BasGaucheMoins1*i];
+				if (c == null) {
+					r2 [CurrentX + (1-bLargeur0Hauteur1)*bHautDroite1BasGaucheMoins1*i, CurrentY + bLargeur0Hauteur1*bHautDroite1BasGaucheMoins1*i] = true;
+				} else {
+					if(c.IsBlue!=this.IsBlue && c.GetType() != typeof(Obstacle))
+						r2 [CurrentX + (1-bLargeur0Hauteur1)*bHautDroite1BasGaucheMoins1*i, CurrentY + bLargeur0Hauteur1*bHautDroite1BasGaucheMoins1*i] = true;
+					i = Deplacement + 1;
+				}
+			}
+			catch{
+				i = Deplacement + 1;
+			}
+		}
+		return r2;
+	}
 
-		for (int i = 1; i <= Deplacement; i++) {
-			try{
-				Card c = BoardManager.Instance.CardBoard [CurrentX, CurrentY + i];
-				if (c == null || c.IsBlue!=this.IsBlue) {
-					r [CurrentX, CurrentY + i] = true;
-				} else {
-					i = Deplacement + 1;
-				}
-			}
-			catch{
-				i = Deplacement + 1;
-			}
-		}
-		for (int i = 1; i <= Deplacement; i++) {
-			try{
-				Card c = BoardManager.Instance.CardBoard [CurrentX, CurrentY - i];
-				if (c == null || c.IsBlue!=this.IsBlue) {
-					r [CurrentX, CurrentY - i] = true;
-				} else {
-					i = Deplacement + 1;
-				}
-			}
-			catch{
-				i = Deplacement + 1;
-			}
-		}
-		for (int i = 1; i <= Deplacement; i++) {
-			try{
-				Card c = BoardManager.Instance.CardBoard [CurrentX + i , CurrentY];
-				if (c == null || c.IsBlue!=this.IsBlue) {
-					r [CurrentX + i, CurrentY] = true;
-				} else {
-					i = Deplacement + 1;
-				}
-			}
-			catch{
-				i = Deplacement + 1;
-			}
-		}
-		for (int i = 1; i <= Deplacement; i++) {
-			try{
-				Card c = BoardManager.Instance.CardBoard [CurrentX - i , CurrentY];
-				if (c == null || c.IsBlue!=this.IsBlue) {
-					r [CurrentX - i, CurrentY] = true;
-				} else {
-					i = Deplacement + 1;
-				}
-			}
-			catch{
-				i = Deplacement + 1;
-			}
-		}
+	public virtual bool[,] PossibleMoves(){
+		bool[,] r = new bool[BoardManager.Instance.LargeurPlateau, BoardManager.Instance.HauteurPlateau];
+
+		r = LigneDroitePossibleMoves (r, 1, 1);
+		r = LigneDroitePossibleMoves (r, 1, -1);
+		r = LigneDroitePossibleMoves (r, 0, 1);
+		r = LigneDroitePossibleMoves (r, 0, -1);
 
 		return r;
 	}
 }
+	
