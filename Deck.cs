@@ -30,14 +30,19 @@ public class Deck : MonoBehaviour {
 		return result;
 	}
 	public int NbDrapeaux(){
-		return 0;
+		int result=0;
+		foreach (bool b in PorteurDrapeau)
+			if (b)
+				result++;
+		return result;
+	}
+
+	public bool IsCorrect(){
+		if (this.NbDrapeaux () > 0 && this.Valeur () <= BoardManager.Instance.ValeurDeckMax)
+			return true;
+		else
+			return false;
 	}
 
 }
-
-/*Card[,] result = new Card[BoardManager.Instance.LargeurPlateau,BoardManager.Instance.HauteurTerritoire]();
-		for (int i = 0; i < BoardManager.Instance.LargeurPlateau; i++) {
-			for (int j = 0; j < BoardManager.Instance.HauteurTerritoire; j++) {
-				result[i,j] = 
-			}
-		}*/
+	
