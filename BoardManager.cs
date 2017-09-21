@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 // test
 public class BoardManager : MonoBehaviour 
 {
 	public Deck deckRouge;
 	public Deck deckBleu;
+	public bool GameEnCours;
 
 	public int LargeurPlateau = 11;
 	public int HauteurPlateau = 10;
@@ -26,9 +28,11 @@ public class BoardManager : MonoBehaviour
 	public List<GameObject> obstacles;//Liste des obstacles placés sur le plateau
 	public List<GameObject> cards; // Liste des cartes existantes
 	private List<GameObject> activeCards = new List<GameObject>();// Liste des cartes présentes dans le jeu
+	//private List<GameObject> cimetiereBleu = new List<GameObject>();
+	//private List<GameObject> cimetiereRouge = new List<GameObject>();
 
-	private List<int> cardsIndexes = new List<int>(); // Cartes initialement présentes
-	private List<IntInt> cardsPlaces = new List<IntInt> ();// Emplacement des cartes initialement présentes 
+	//private List<int> cardsIndexes = new List<int>(); // Cartes initialement présentes
+	//private List<IntInt> cardsPlaces = new List<IntInt> ();// Emplacement des cartes initialement présentes 
 
 	public bool isBlueTurn = true;
 
@@ -76,6 +80,16 @@ public class BoardManager : MonoBehaviour
 				if (selectedCard.WinsWhenAttacks (CardBoard [x, y]) == "1") {
 					//Destroy an ennemy card
 					activeCards.Remove (CardBoard [x, y].gameObject);
+					//win si drapeau détruit
+					if(CardBoard[x,y].PorteDrapeau){
+						if (CardBoard [x, y].IsBlue)
+							EndGame ("rouge");
+						else
+							EndGame ("bleu");
+						}
+					/*if (CardBoard [x, y].IsBlue)
+						cimetiereBleu.Add (Instantiate(CardBoard [x, y].gameObject));
+					else cimetiereRouge.Add(Instantiate(CardBoard [x, y].gameObject));*/
 					Destroy(CardBoard[x,y].gameObject);
 					CardBoard[selectedCard.CurrentX, selectedCard.CurrentY] = null;
 					selectedCard.transform.position = GetTileCenter (x, y);
@@ -84,10 +98,39 @@ public class BoardManager : MonoBehaviour
 					selectedCard.Revelee = true;
 				} else if (selectedCard.WinsWhenAttacks (CardBoard [x, y]) == "0") {
 					activeCards.Remove (selectedCard.gameObject);
+					//win si drapeau détruit
+					if(selectedCard.PorteDrapeau){
+						if (selectedCard.IsBlue)
+							EndGame ("rouge");
+						else
+							EndGame ("bleu");
+					}
+					/*if (selectedCard.IsBlue)
+						cimetiereBleu.Add (Instantiate(selectedCard.gameObject));
+					else cimetiereRouge.Add(Instantiate(selectedCard.gameObject));*/
 					Destroy(selectedCard.gameObject);
 					CardBoard [x, y].Revelee = true;
 				} else {
 					activeCards.Remove (CardBoard [x, y].gameObject);
+					//win si drapeau détruit
+					if (selectedCard.PorteDrapeau) {
+						if (selectedCard.IsBlue)
+							EndGame ("rouge");
+						else
+							EndGame ("bleu");
+					}
+					if(CardBoard[x,y].PorteDrapeau){
+						if (CardBoard [x, y].IsBlue)
+							EndGame ("rouge");
+						else
+							EndGame ("bleu");
+					}
+					/*if (CardBoard [x, y].IsBlue)
+						cimetiereBleu.Add (Instantiate(CardBoard [x, y].gameObject));
+					else cimetiereRouge.Add(Instantiate(CardBoard [x, y].gameObject));
+					if (selectedCard.IsBlue)
+						cimetiereBleu.Add (Instantiate(selectedCard.gameObject));
+					else cimetiereRouge.Add(Instantiate(selectedCard.gameObject));*/
 					Destroy(CardBoard[x,y].gameObject);
 					activeCards.Remove (selectedCard.gameObject);
 					Destroy(selectedCard.gameObject);
@@ -107,10 +150,10 @@ public class BoardManager : MonoBehaviour
 
 	private void Start(){ // Fonction qui s'éxecute au lancement
 		Instance=this;
+		GameEnCours = true;
 		CardBoard = new Card[LargeurPlateau,HauteurPlateau];
-		SpawnAllObstacles ();
+		//SpawnAllObstacles ();
 		SpawnDecks ();
-		//SpawnAllCards ();
 	}
 
 	private void DrawBoard()// Dessine le plateau et retourne là où est la souris
@@ -174,14 +217,14 @@ public class BoardManager : MonoBehaviour
 		return origin;
 	}
 
-	private void SpawnAllCards(){
+	/*private void SpawnAllCards(){
 		GetCardsPositions ();
 		CardBoard = new Card[LargeurPlateau,HauteurPlateau];
 		SpawnAllObstacles ();
 		for (int i = 0; i < cardsIndexes.Count; i++) {
 			SpawnCard (cardsIndexes [i],cardsPlaces [i].x, cardsPlaces [i].y);
 		}
-	}
+	}*/
 
 	private void SpawnDecks(){
 		CardBoard = new Card[LargeurPlateau,HauteurPlateau];
@@ -191,11 +234,12 @@ public class BoardManager : MonoBehaviour
 		for (int i = 0; i < LargeurPlateau; i++) {
 			for (int j = 0; j < HauteurTerritoire; j++) {
 				try{
-				GameObject go = Instantiate (deckBleu.CardsAndPlaces[i,j].gameObject, GetTileCenter(i,j),Quaternion.Euler(0,180,0) ) as GameObject;
-				go.transform.SetParent (transform);
-				CardBoard [i, j] = go.GetComponent<Card> ();
-				CardBoard [i, j].SetPosition (i, j);
-				activeCards.Add (go);
+					GameObject go = Instantiate (deckBleu.CardsAndPlaces[i,j].gameObject, GetTileCenter(i,j),Quaternion.Euler(0,180,0) ) as GameObject;
+					go.transform.SetParent (transform);
+					CardBoard [i, j] = go.GetComponent<Card> ();
+					CardBoard [i, j].SetPosition (i, j);
+					if(CardBoard[i,j].PorteDrapeau)CardBoard[i,j].Deplacement=1;
+					activeCards.Add (go);
 				}
 				catch{}
 			}
@@ -205,10 +249,11 @@ public class BoardManager : MonoBehaviour
 			for (int j = HauteurPlateau - HauteurTerritoire; j < HauteurPlateau; j++) {
 				try{
 					GameObject go = Instantiate (deckRouge.CardsAndPlaces[LargeurPlateau-i-1,HauteurPlateau-j-1].gameObject, GetTileCenter(i,j),Quaternion.Euler(0,180,0) ) as GameObject;
-				go.transform.SetParent (transform);
-				CardBoard [i, j] = go.GetComponent<Card> ();
-				CardBoard [i, j].SetPosition (i, j);
-				activeCards.Add (go);
+					go.transform.SetParent (transform);
+					CardBoard [i, j] = go.GetComponent<Card> ();
+					CardBoard [i, j].SetPosition (i, j);
+					if(CardBoard[i,j].PorteDrapeau)CardBoard[i,j].Deplacement=1;
+					activeCards.Add (go);
 				}
 				catch{}
 			}
@@ -232,7 +277,18 @@ public class BoardManager : MonoBehaviour
 		SpawnObstacle (7, 5);
 	}
 
-	private void GetCardsPositions (){
+	public void EndGame(string winner){
+		if (GameEnCours == false)
+			return;
+		if (winner == "bleu")
+			Debug.Log ("bleu gagne");
+		if (winner == "rouge")
+			Debug.Log ("rouge gagne");
+		GameEnCours = false;
+		SceneManager.LoadScene ("Menu");
+	}
+
+	/*private void GetCardsPositions (){
 		cardsIndexes = new List<int>(new int[]{0,1,2,3,4,5,6,7});
 		cardsPlaces = new List<IntInt> ();
 		cardsPlaces.Add (new IntInt (1, 1));
@@ -243,7 +299,7 @@ public class BoardManager : MonoBehaviour
 		cardsPlaces.Add (new IntInt (2, 2));
 		cardsPlaces.Add (new IntInt (2, 3));
 		cardsPlaces.Add (new IntInt (2, 4));
-	}
+	}*/
 
 
 }
