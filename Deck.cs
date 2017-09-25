@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Deck : MonoBehaviour {
+public class Deck : MonoBehaviour{
 	public Card[,] CardsAndPlaces;
 
 	public List<Card> Cartes;
 	public List<IntInt> Emplacements;
-	public List<int> Abscisse;
+	public List<int> Abscisses;
 	public List<int> Ordonnées;
 	public List<bool> PorteurDrapeau;
 
@@ -15,8 +15,8 @@ public class Deck : MonoBehaviour {
 		CardsAndPlaces = new Card[BoardManager.Instance.LargeurPlateau,BoardManager.Instance.HauteurTerritoire];
 		for(int i = 0; i<Cartes.Count;i++) {
 			//Debug.Log (i.ToString (), Abscisse [i].ToString());
-			this.CardsAndPlaces [Abscisse [i], Ordonnées [i]] = Cartes [i];
-			CardsAndPlaces [Abscisse [i], Ordonnées [i]].PorteDrapeau = PorteurDrapeau [i];
+			this.CardsAndPlaces [Abscisses [i], Ordonnées [i]] = Cartes [i];
+			CardsAndPlaces [Abscisses [i], Ordonnées [i]].PorteDrapeau = PorteurDrapeau [i];
 		}
 	}
 

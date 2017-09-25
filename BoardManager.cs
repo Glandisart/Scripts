@@ -25,8 +25,8 @@ public class BoardManager : MonoBehaviour
 	public Card[,] CardBoard{ get; set; } // Le plateau 
 	private Card selectedCard; // La carte séléctionnée par le joueur 
 
-	private const float TILE_SIZE = 1.0f;
-	private const float TILE_OFFSET = 0.5f; // taille des cases
+	public const float TILE_SIZE = 1.0f;
+	public const float TILE_OFFSET = 0.5f; // taille des cases
 
 	private int selectionX = -1;
 	private int selectionY = -1; // Coordonnées de l'emplacement de la souris
@@ -226,7 +226,7 @@ public class BoardManager : MonoBehaviour
 		for (int i = 0; i < LargeurPlateau; i++) {
 			for (int j = 0; j < HauteurTerritoire; j++) {
 				try{
-					GameObject c=deckBleu.CardsAndPlaces[i,j].gameObject;
+					GameObject c = deckBleu.CardsAndPlaces[i,j].gameObject;
 					GameObject go = Instantiate (c, GetTileCenter(i,j),Quaternion.Euler(0,(c.GetComponent<Card>()).Revelee? 180:(!JoueurBleu ? 0:180),0) ) as GameObject;
 					go.transform.SetParent (transform);
 					CardBoard [i, j] = go.GetComponent<Card> ();
