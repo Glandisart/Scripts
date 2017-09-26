@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public static class Values{
 	public static int LargeurPlateau = 11;
@@ -12,5 +13,8 @@ public static class Values{
 	public static int ValeurDeckMax = 50; 
 	public static float TILE_SIZE = 1.0f;
 	public static float TILE_OFFSET = 0.5f; 
+
+	public static List<GameObject> AllCards;
+		//new List<Card> (Resources.Load<Card>("Assets/Prefab/CartesDuJeu"));
 }
 

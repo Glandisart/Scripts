@@ -28,7 +28,8 @@ public class ButtonManager : MonoBehaviour {
 			if (c != null) {
 				d.Abscisses.Add (c.CurrentX); 
 				d.Ordonnées.Add (c.CurrentY);
-				d.Cartes.Add (c);
+				d.CartesId.Add (c.Id);
+				d.PorteurDrapeau.Add (c.PorteDrapeau);
 			}
 		}
 		//Object NewDeck

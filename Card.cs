@@ -11,6 +11,8 @@ public abstract class Card : MonoBehaviour {
 	public bool Revelee;
 	public float Valeur;
 	public bool PorteDrapeau;
+	public string Name;
+	public int Id;
 
 	public void SetPosition(int x, int y){
 		CurrentX = x;

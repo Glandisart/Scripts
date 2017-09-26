@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.UI;
 
 public class CreationBoardManager : MonoBehaviour {
 	public static CreationBoardManager Instance{ get; set; }
@@ -9,6 +10,9 @@ public class CreationBoardManager : MonoBehaviour {
 	public Card DragedCard;
 	public GameObject DragedGameObject;
 	public Deck NewDeck;
+	public Button button;
+
+	public List<Card> AllCards;
 
 	private int selectionX = -1;
 	private int selectionY = -1;
@@ -51,7 +55,6 @@ public class CreationBoardManager : MonoBehaviour {
 		}
 		if (selectionX < 0 || selectionY < 0)
 			return;
-		Debug.Log (DragedGameObject.ToString ());
 		if (CardBoard [selectionX,selectionY] == null && Input.GetMouseButtonDown(0) && Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition) /*,25.0f, LayerMask.GetMask ("BoardPlane2")*/)) {
 			CardBoard [selectionX, selectionY] = Instantiate(DragedCard);
 			CardBoard [selectionX, selectionY].transform.position = GetTileCenter (selectionX, selectionY);

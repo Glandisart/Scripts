@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
+using UnityEngine.Networking;
 
 public class BoardManager : MonoBehaviour 
 {
@@ -32,7 +33,7 @@ public class BoardManager : MonoBehaviour
 	private int selectionY = -1; // Coordonnées de l'emplacement de la souris
 
 	public List<GameObject> obstacles;//Liste des obstacles placés sur le plateau
-	public List<GameObject> cards; // Liste des cartes existantes
+	public List<GameObject> AllCards; // Liste des cartes existantes
 	private List<GameObject> activeCards = new List<GameObject>();// Liste des cartes présentes dans le jeu
 	//private List<GameObject> cimetiereBleu = new List<GameObject>();
 	//private List<GameObject> cimetiereRouge = new List<GameObject>();
@@ -214,11 +215,11 @@ public class BoardManager : MonoBehaviour
 
 	private void SpawnDecks(){
 		CardBoard = new Card[LargeurPlateau,HauteurPlateau];
-		deckBleu.GetCardsAndPlaces ();
+		deckBleu.GetCardsAndPlacesById ();
 		foreach (Card c in deckBleu.CardsAndPlaces)
 			if(c!=null)
 				c.IsBlue = true;
-		deckRouge.GetCardsAndPlaces ();
+		deckRouge.GetCardsAndPlacesById ();
 		foreach (Card c in deckRouge.CardsAndPlaces)
 			if(c!=null)
 				c.IsBlue = false;
@@ -231,6 +232,7 @@ public class BoardManager : MonoBehaviour
 					go.transform.SetParent (transform);
 					CardBoard [i, j] = go.GetComponent<Card> ();
 					CardBoard [i, j].SetPosition (i, j);
+					CardBoard [i, j].IsBlue = true;
 					if(CardBoard[i,j].PorteDrapeau)CardBoard[i,j].Deplacement=1;
 					activeCards.Add (go);
 				}
@@ -246,6 +248,7 @@ public class BoardManager : MonoBehaviour
 					go.transform.SetParent (transform);
 					CardBoard [i, j] = go.GetComponent<Card> ();
 					CardBoard [i, j].SetPosition (i, j);
+					CardBoard [i, j].IsBlue = false;
 					if(CardBoard[i,j].PorteDrapeau)CardBoard[i,j].Deplacement=1;
 					activeCards.Add (go);
 				}
