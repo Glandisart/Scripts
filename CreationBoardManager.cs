@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UI;
+using System.Linq;
 
 public class CreationBoardManager : MonoBehaviour {
 	public static CreationBoardManager Instance{ get; set; }
@@ -11,6 +12,8 @@ public class CreationBoardManager : MonoBehaviour {
 	public GameObject DragedGameObject;
 	public Deck NewDeck;
 	public Button button;
+	public Text AffichageValeurDeck;
+	public float NewDeckValue;
 
 	public List<Card> AllCards;
 
@@ -42,6 +45,7 @@ public class CreationBoardManager : MonoBehaviour {
 				}
 			}
 		}
+		RemoveCard ();
 		DragAndDrop ();
 	} 
 
@@ -56,6 +60,8 @@ public class CreationBoardManager : MonoBehaviour {
 		if (selectionX < 0 || selectionY < 0)
 			return;
 		if (CardBoard [selectionX,selectionY] == null && Input.GetMouseButtonDown(0) && Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition) /*,25.0f, LayerMask.GetMask ("BoardPlane2")*/)) {
+			NewDeckValue += DragedCard.Valeur;
+			AffichageValeurDeck.text = NewDeckValue.ToString ();
 			CardBoard [selectionX, selectionY] = Instantiate(DragedCard);
 			CardBoard [selectionX, selectionY].transform.position = GetTileCenter (selectionX, selectionY);
 			CardBoard [selectionX, selectionY].SetPosition (selectionX, selectionY);
@@ -101,6 +107,18 @@ public class CreationBoardManager : MonoBehaviour {
 			CardBoard [x, y] = selectedCard;
 		}
 		selectedCard = null;
+	}
+
+	private void RemoveCard(){
+		if (selectedCard == null)
+			return;
+		if (Input.GetKeyDown(KeyCode.Delete)) {
+			NewDeckValue -= selectedCard.Valeur;
+			AffichageValeurDeck.text = NewDeckValue.ToString ();
+			DestroyImmediate (CardBoard [selectedCard.CurrentX, selectedCard.CurrentY].gameObject);
+			CardBoard [selectedCard.CurrentX, selectedCard.CurrentY] = null;
+			selectedCard = null;
+		}
 	}
 
 	private Vector2 GetTileCenter(int x, int y){
