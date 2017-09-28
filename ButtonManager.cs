@@ -7,8 +7,10 @@ using UnityEditor;
 using UnityEngine.UI;
 
 public class ButtonManager : MonoBehaviour {
+	public static ButtonManager Instance{ get; set;}
 
-	public void DragAndDrop(Card c){
+	public void DragAndDrop(Card c, GameObject sender){
+		(sender.GetComponent ("Halo") as Behaviour).enabled = true;
 		CreationBoardManager.Instance.selectedCard = null;
 		CreationBoardManager.Instance.DragedCard = Instantiate(c);
 		CreationBoardManager.Instance.DragedCard.transform.position = Input.mousePosition;
@@ -33,7 +35,7 @@ public class ButtonManager : MonoBehaviour {
 			}
 		}
 		//Object NewDeck
-		System.Object prefab = PrefabUtility.CreatePrefab("Assets/Deck/"+DeckName.text+".prefab",CreationBoardManager.Instance.NewDeck.gameObject);
+		/*System.Object prefab = */PrefabUtility.CreatePrefab("Assets/Deck/"+DeckName.text+".prefab",CreationBoardManager.Instance.NewDeck.gameObject);
 	}
 
 	public void NewGameBtn (string NewGame) {

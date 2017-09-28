@@ -11,9 +11,12 @@ public class CreationBoardManager : MonoBehaviour {
 	public Card DragedCard;
 	public GameObject DragedGameObject;
 	public Deck NewDeck;
-	public Button button;
+	public Button SaveButton;
 	public Text AffichageValeurDeck;
 	public float NewDeckValue;
+	public Button CardButton;
+	public Canvas canvas;
+	public ButtonManager buttonManager;
 
 	public List<Card> AllCards;
 
@@ -23,9 +26,28 @@ public class CreationBoardManager : MonoBehaviour {
 	public Card selectedCard;
 
 	private void Start(){ // Fonction qui s'éxecute au lancement
+		SpawnButtons();
 		Instantiate(NewDeck);
 		Instance=this;
 		CardBoard = new Card[Values.LargeurPlateau,Values.HauteurPlateau];
+	}
+
+	private void SpawnButtons(){
+		float HauteurTopButton = 160f;
+		float HauteurOneButton = 35f;
+		int iterations = 0;
+
+		foreach (Card c in AllCards) {
+			GameObject go = Instantiate(CardButton.gameObject,new Vector2(300f, HauteurTopButton - iterations * HauteurOneButton),Quaternion.Euler(0,0,0));
+			go.transform.SetParent (canvas.transform);
+			go.name = AllCards [iterations].Name;
+			go.GetComponentInChildren<Text>().text = go.name;
+			go.GetComponent<Button> ().onClick.AddListener (() => {
+				buttonManager.DragAndDrop(c,go);
+			});
+			iterations++;
+
+		}
 	}
 
 	private void Update() //Fonction qui s'execute à chaque frame
