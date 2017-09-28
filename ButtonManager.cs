@@ -10,7 +10,8 @@ public class ButtonManager : MonoBehaviour {
 	public static ButtonManager Instance{ get; set;}
 
 	public void DragAndDrop(Card c, GameObject sender){
-		(sender.GetComponent ("Halo") as Behaviour).enabled = true;
+		try{(sender.GetComponent ("Halo") as Behaviour).enabled = true;}
+		catch{}
 		CreationBoardManager.Instance.selectedCard = null;
 		CreationBoardManager.Instance.DragedCard = Instantiate(c);
 		CreationBoardManager.Instance.DragedCard.transform.position = Input.mousePosition;

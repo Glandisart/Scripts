@@ -18,7 +18,7 @@ public class CreationBoardManager : MonoBehaviour {
 	public Canvas canvas;
 	public ButtonManager buttonManager;
 
-	public List<Card> AllCards;
+	public List<Card> AllCards; 
 
 	private int selectionX = -1;
 	private int selectionY = -1;
@@ -33,12 +33,14 @@ public class CreationBoardManager : MonoBehaviour {
 	}
 
 	private void SpawnButtons(){
-		float HauteurTopButton = 160f;
-		float HauteurOneButton = 35f;
+		float HauteurTopButton = 180f;
+		float HauteurOneButton = 24f;
+		float LargeurColonne = 25f;
 		int iterations = 0;
+		int NbCartesParColones  = 8;
 
 		foreach (Card c in AllCards) {
-			GameObject go = Instantiate(CardButton.gameObject,new Vector2(300f, HauteurTopButton - iterations * HauteurOneButton),Quaternion.Euler(0,0,0));
+			GameObject go = Instantiate(CardButton.gameObject,new Vector2(200f+iterations/NbCartesParColones * LargeurColonne, HauteurTopButton - iterations%NbCartesParColones * HauteurOneButton),Quaternion.Euler(0,0,0));
 			go.transform.SetParent (canvas.transform);
 			go.name = AllCards [iterations].Name;
 			go.GetComponentInChildren<Text>().text = go.name;
