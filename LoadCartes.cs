@@ -29,6 +29,8 @@ public class LoadCartes : MonoBehaviour {
 			CardToSave.Description = c2.Description;
 			CardToSave.Id = c2.Id;
 			CardToSave.ShortName = c2.ShortName;
+			CardToSave.VisuelPath = c2.ShortName;
+			CardToSave.VisuelSprite = Resources.Load<Sprite> ("CartesImportées/Visuel/"+c2.ShortName);
 			CardToSave.gameObject.GetComponent<SpriteRenderer> ().sprite = Resources.Load<Sprite> ("CartesImportées/Visuel/"+c2.ShortName);
 			if(CardToSave.Name != "")
 				PrefabUtility.CreatePrefab (PathCard + CardToSave.ShortName + ".prefab", CardToSave.gameObject);

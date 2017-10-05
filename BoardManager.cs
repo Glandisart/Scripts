@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 using System;
 using UnityEngine.Networking;
 using System.Linq;
+using System.IO;
+using UnityEditor;
 
 public class BoardManager : MonoBehaviour 
 {
@@ -20,6 +22,7 @@ public class BoardManager : MonoBehaviour
 	public int HauteurCamp = 2;
 	public int ValeurDeckMax = 50;
 	public bool JoueurBleu = true;
+	public GameObject CardView;
 
 	public static BoardManager Instance{ get; set; }
 	private bool [,] allowedMoves{ get; set; }
@@ -63,6 +66,7 @@ public class BoardManager : MonoBehaviour
 			}
 		}
 	}
+
 	private void SelectCard(int x, int y){
 		if (CardBoard [x, y] == null) 
 			return;
@@ -93,16 +97,18 @@ public class BoardManager : MonoBehaviour
 					selectedCard.transform.position = GetTileCenter (x, y);
 					selectedCard.SetPosition (x, y);
 					CardBoard [x, y] = selectedCard;
-					selectedCard.transform.Rotate (0,(selectedCard.IsBlue && JoueurBleu) ? 0:(selectedCard.Revelee ? 0:180) , 0);
+					//selectedCard.transform.Rotate (0,(selectedCard.IsBlue && JoueurBleu) ? 0:(selectedCard.Revelee ? 0:180) , 0);
 					selectedCard.Revelee = true;
+					selectedCard.gameObject.GetComponent<SpriteRenderer> ().sprite = GetSprite (selectedCard.gameObject);
 				} else if (selectedCard.WinsWhenAttacks (CardBoard [x, y]) == "0") {
 					activeCards.Remove (selectedCard.gameObject);
 					//win si drapeau détruit
 					if (selectedCard.PorteDrapeau)
 						EndGame (selectedCard.IsBlue ? "rouge MangeDrapeau" : "bleu MangeDrapeau");
 					DestroyImmediate(selectedCard.gameObject);
-					CardBoard[x,y].transform.Rotate (0,(CardBoard[x,y].IsBlue && JoueurBleu) ? 0:(CardBoard[x,y].Revelee ? 0:180) , 0);
+					//CardBoard[x,y].transform.Rotate (0,(CardBoard[x,y].IsBlue && JoueurBleu) ? 0:(CardBoard[x,y].Revelee ? 0:180) , 0);
 					CardBoard [x, y].Revelee = true;
+					CardBoard [x, y].gameObject.GetComponent<SpriteRenderer> ().sprite = GetSprite (CardBoard [x, y].gameObject);
 				} else {
 					activeCards.Remove (CardBoard [x, y].gameObject);
 					//win si drapeau détruit
@@ -114,10 +120,12 @@ public class BoardManager : MonoBehaviour
 					activeCards.Remove (selectedCard.gameObject);
 					DestroyImmediate(selectedCard.gameObject);
 					try{
-						selectedCard.transform.Rotate (0,(selectedCard.IsBlue && JoueurBleu) ? 0:(selectedCard.Revelee ? 0:180) , 0);
-						CardBoard[x,y].transform.Rotate (0,(CardBoard[x,y].IsBlue && JoueurBleu) ? 0:(CardBoard[x,y].Revelee ? 0:180) , 0);
+						//selectedCard.transform.Rotate (0,(selectedCard.IsBlue && JoueurBleu) ? 0:(selectedCard.Revelee ? 0:180) , 0);
+						//CardBoard[x,y].transform.Rotate (0,(CardBoard[x,y].IsBlue && JoueurBleu) ? 0:(CardBoard[x,y].Revelee ? 0:180) , 0);
 						selectedCard.Revelee=true;
+						selectedCard.gameObject.GetComponent<SpriteRenderer> ().sprite = GetSprite (selectedCard.gameObject);
 						CardBoard[x,y].Revelee = true;
+						CardBoard [x, y].gameObject.GetComponent<SpriteRenderer> ().sprite = GetSprite (CardBoard [x, y].gameObject);
 					}
 					catch{}
 				}
@@ -137,7 +145,10 @@ public class BoardManager : MonoBehaviour
 	} 
 
 	private void Start(){ // Fonction qui s'éxecute au lancement
+		//Screen.SetResolution(1000,750,true);
 		AllCards = Resources.LoadAll<GameObject>("CartesDuJeu/Données").ToList();
+		GetDosDeCartes ();
+
 		Instance=this;
 		GameEnCours = true;
 		CardBoard = new Card[LargeurPlateau,HauteurPlateau];
@@ -145,7 +156,12 @@ public class BoardManager : MonoBehaviour
 		SpawnDecks ();
 	}
 
-	private void DrawBoard()// Dessine le plateau et retourne là où est la souris
+	private void GetDosDeCartes(){
+		deckBleu.DosDeCarte = Resources.Load<Sprite> ("DosDeCartes/DosBleu");
+		deckRouge.DosDeCarte = Resources.Load<Sprite> ("DosDeCartes/DosRouge");
+	}
+
+	private void DrawBoard()// Dessine le plateau et dessine une croix là où est la souris
 	{
 		Vector2 widthLine = Vector2.right * LargeurPlateau;
 		Vector2 heightLine = Vector2.up * HauteurPlateau;
@@ -159,6 +175,7 @@ public class BoardManager : MonoBehaviour
 			{
 				start = Vector2.right * j;
 				Debug.DrawLine (start, start + heightLine);
+
 			}
 		}
 		//Draw une croix sur la case où il y a la souris
@@ -169,6 +186,9 @@ public class BoardManager : MonoBehaviour
 			Debug.DrawLine (Vector2.right * (selectionX) + Vector2.up * (selectionY+1),
 				Vector2.right * (selectionX + 1) + Vector2.up * selectionY);
 
+			if (CardBoard [selectionX, selectionY] != null) {
+				CardView.GetComponent<SpriteRenderer> ().sprite = CardBoard [selectionX, selectionY].gameObject.GetComponent<SpriteRenderer>().sprite;
+			}
 		}
 
 	}
@@ -217,11 +237,11 @@ public class BoardManager : MonoBehaviour
 
 	private void SpawnDecks(){
 		CardBoard = new Card[LargeurPlateau,HauteurPlateau];
-		deckBleu.GetCardsAndPlacesById ();
+		deckBleu.GetCardsAndPlacesByShortName ();
 		foreach (Card c in deckBleu.CardsAndPlaces)
 			if(c!=null)
 				c.IsBlue = true;
-		deckRouge.GetCardsAndPlacesById ();
+		deckRouge.GetCardsAndPlacesByShortName ();
 		foreach (Card c in deckRouge.CardsAndPlaces)
 			if(c!=null)
 				c.IsBlue = false;
@@ -230,12 +250,13 @@ public class BoardManager : MonoBehaviour
 			for (int j = 0; j < HauteurTerritoire; j++) {
 				try{
 					GameObject c = deckBleu.CardsAndPlaces[i,j].gameObject;
-					GameObject go = Instantiate (c, GetTileCenter(i,j),Quaternion.Euler(0,(c.GetComponent<Card>()).Revelee? 180:(!JoueurBleu ? 0:180),0) ) as GameObject;
+					GameObject go = Instantiate (c, GetTileCenter(i,j),Quaternion.Euler(JoueurBleu ? 0:180,0,0) ) as GameObject;
 					go.transform.SetParent (transform);
 					CardBoard [i, j] = go.GetComponent<Card> ();
 					CardBoard [i, j].SetPosition (i, j);
 					CardBoard [i, j].transform.localScale = new Vector3((float)0.25,(float)0.25,1);
 					CardBoard [i, j].IsBlue = true;
+					go.GetComponent<SpriteRenderer>().sprite = GetSprite(go);
 					if(CardBoard[i,j].PorteDrapeau)CardBoard[i,j].Deplacement=1;
 					activeCards.Add (go);
 				}
@@ -247,12 +268,13 @@ public class BoardManager : MonoBehaviour
 			for (int j = HauteurPlateau - HauteurTerritoire; j < HauteurPlateau; j++) {
 				try{
 					GameObject c=deckRouge.CardsAndPlaces[LargeurPlateau-i-1,HauteurPlateau-j-1].gameObject;
-					GameObject go = Instantiate (c, GetTileCenter(i,j),Quaternion.Euler(0,(c.GetComponent<Card>()).Revelee? 180:(JoueurBleu ? 0:180),0) ) as GameObject;
+					GameObject go = Instantiate (c, GetTileCenter(i,j),Quaternion.Euler(!JoueurBleu ? 0:180,0,0) ) as GameObject;//(c.GetComponent<Card>()).Revelee? 180:(JoueurBleu ? 0:180)
 					go.transform.SetParent (transform);
 					CardBoard [i, j] = go.GetComponent<Card> ();
 					CardBoard [i, j].SetPosition (i, j);
 					CardBoard [i, j].transform.localScale = new Vector3((float)0.25,(float)0.25,1);
 					CardBoard [i, j].IsBlue = false;
+					go.GetComponent<SpriteRenderer>().sprite = GetSprite(go);
 					if(CardBoard[i,j].PorteDrapeau)CardBoard[i,j].Deplacement=1;
 					activeCards.Add (go);
 				}
@@ -314,18 +336,14 @@ public class BoardManager : MonoBehaviour
 		return true;
 	}
 
-	/*private void GetCardsPositions (){
-		cardsIndexes = new List<int>(new int[]{0,1,2,3,4,5,6,7});
-		cardsPlaces = new List<IntInt> ();
-		cardsPlaces.Add (new IntInt (1, 1));
-		cardsPlaces.Add (new IntInt (1, 2));
-		cardsPlaces.Add (new IntInt (1, 3));
-		cardsPlaces.Add (new IntInt (1, 4));
-		cardsPlaces.Add (new IntInt (2, 1));
-		cardsPlaces.Add (new IntInt (2, 2));
-		cardsPlaces.Add (new IntInt (2, 3));
-		cardsPlaces.Add (new IntInt (2, 4));
-	}*/
+	public Sprite GetSprite(GameObject go){
+		Card c = go.GetComponent<Card> ();
+		if (c.Revelee || c.IsBlue == JoueurBleu)
+			return c.VisuelSprite;
+		else
+			return c.IsBlue ? deckBleu.DosDeCarte : deckRouge.DosDeCarte;
+		
+	}
 
 }
 

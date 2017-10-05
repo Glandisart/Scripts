@@ -28,6 +28,7 @@ public class ButtonManager : MonoBehaviour {
 		d.Ordonnées = new List<int> ();
 		d.PorteurDrapeau = new List<bool> ();
 		d.Cartes = new List<NormalCard> ();
+		d.CartesShortName = new List<string> ();
 		foreach (Card c in CreationBoardManager.Instance.CardBoard) {
 			if (c != null) {
 				d.Abscisses.Add (c.CurrentX); 
@@ -35,6 +36,7 @@ public class ButtonManager : MonoBehaviour {
 				d.CartesId.Add (c.Id);
 				d.PorteurDrapeau.Add (c.PorteDrapeau);
 				d.Cartes.Add (c as NormalCard);
+				d.CartesShortName.Add (c.ShortName);
 			}
 		}
 		//Object NewDeck
