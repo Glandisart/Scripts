@@ -26,6 +26,7 @@ public class CreationBoardManager : MonoBehaviour {
 	public Card selectedCard;
 
 	private void Start(){ // Fonction qui s'éxecute au lancement
+		AllCards = Resources.LoadAll<Card>("CartesDuJeu").ToList();
 		SpawnButtons();
 		Instantiate(NewDeck);
 		Instance=this;
@@ -33,14 +34,17 @@ public class CreationBoardManager : MonoBehaviour {
 	}
 
 	private void SpawnButtons(){
-		float HauteurTopButton = 180f;
-		float HauteurOneButton = 24f;
-		float LargeurColonne = 25f;
+		int h = Screen.height;
+		int w = Screen.width;
+		//float HauteurTopButton = 180f;
+		//float HauteurOneButton = 24f;
+		//float LargeurColonne = 25f;
 		int iterations = 0;
 		int NbCartesParColones  = 8;
 
+
 		foreach (Card c in AllCards) {
-			GameObject go = Instantiate(CardButton.gameObject,new Vector2(200f+iterations/NbCartesParColones * LargeurColonne, HauteurTopButton - iterations%NbCartesParColones * HauteurOneButton),Quaternion.Euler(0,0,0));
+			GameObject go = Instantiate(CardButton.gameObject,Camera.main.ScreenToWorldPoint(new Vector3((float)(0.1+0.05*(float)((int)(iterations%NbCartesParColones)))*(float)w,(float)(0.4-0.1*(float)((int)(iterations/NbCartesParColones)))*(float)h,200)),Quaternion.Euler(0,0,0));
 			go.transform.SetParent (canvas.transform);
 			go.name = AllCards [iterations].Name;
 			go.GetComponentInChildren<Text>().text = go.name;
@@ -50,6 +54,18 @@ public class CreationBoardManager : MonoBehaviour {
 			iterations++;
 
 		}
+
+		/*foreach (Card c in AllCards) {
+			GameObject go = Instantiate(CardButton.gameObject,new Vector2(200f+iterations/NbCartesParColones * LargeurColonne, HauteurTopButton - iterations%NbCartesParColones * HauteurOneButton),Quaternion.Euler(0,0,0));
+			go.transform.SetParent (canvas.transform);
+			go.name = AllCards [iterations].Name;
+			go.GetComponentInChildren<Text>().text = go.name;
+			go.GetComponent<Button> ().onClick.AddListener (() => {
+				buttonManager.DragAndDrop(c,go);
+			});
+			iterations++;
+
+		}*/
 	}
 
 	private void Update() //Fonction qui s'execute à chaque frame
@@ -87,7 +103,10 @@ public class CreationBoardManager : MonoBehaviour {
 			NewDeckValue += DragedCard.Valeur;
 			AffichageValeurDeck.text = NewDeckValue.ToString ();
 			CardBoard [selectionX, selectionY] = Instantiate(DragedCard);
+			CardBoard [selectionX, selectionY].transform.SetParent (canvas.transform);
+			CardBoard [selectionX, selectionY].transform.localScale = new Vector3 (5, 5, 5);
 			CardBoard [selectionX, selectionY].transform.position = GetTileCenter (selectionX, selectionY);
+			CardBoard [selectionX, selectionY].transform.Rotate (0, 180, 0);
 			CardBoard [selectionX, selectionY].SetPosition (selectionX, selectionY);
 			DragedCard = null;
 			Destroy (DragedGameObject);

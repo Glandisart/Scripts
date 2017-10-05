@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
 using UnityEngine.Networking;
+using System.Linq;
 
 public class BoardManager : MonoBehaviour 
 {
@@ -136,6 +137,7 @@ public class BoardManager : MonoBehaviour
 	} 
 
 	private void Start(){ // Fonction qui s'éxecute au lancement
+		AllCards = Resources.LoadAll<GameObject>("CartesDuJeu/Données").ToList();
 		Instance=this;
 		GameEnCours = true;
 		CardBoard = new Card[LargeurPlateau,HauteurPlateau];
@@ -232,6 +234,7 @@ public class BoardManager : MonoBehaviour
 					go.transform.SetParent (transform);
 					CardBoard [i, j] = go.GetComponent<Card> ();
 					CardBoard [i, j].SetPosition (i, j);
+					CardBoard [i, j].transform.localScale = new Vector3((float)0.25,(float)0.25,1);
 					CardBoard [i, j].IsBlue = true;
 					if(CardBoard[i,j].PorteDrapeau)CardBoard[i,j].Deplacement=1;
 					activeCards.Add (go);
@@ -248,6 +251,7 @@ public class BoardManager : MonoBehaviour
 					go.transform.SetParent (transform);
 					CardBoard [i, j] = go.GetComponent<Card> ();
 					CardBoard [i, j].SetPosition (i, j);
+					CardBoard [i, j].transform.localScale = new Vector3((float)0.25,(float)0.25,1);
 					CardBoard [i, j].IsBlue = false;
 					if(CardBoard[i,j].PorteDrapeau)CardBoard[i,j].Deplacement=1;
 					activeCards.Add (go);

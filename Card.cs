@@ -12,7 +12,13 @@ public abstract class Card : MonoBehaviour {
 	public float Valeur;
 	public bool PorteDrapeau;
 	public string Name;
+	public string ShortName;
 	public int Id;
+	public string Description;
+	public string ImagePath;
+	public Sprite ImageSprite;
+	public string VisuelPath;
+	public Sprite VisuelSprite;
 
 	public void SetPosition(int x, int y){
 		CurrentX = x;
@@ -52,10 +58,10 @@ public abstract class Card : MonoBehaviour {
 	public virtual bool[,] PossibleMoves(){
 		bool[,] r = new bool[BoardManager.Instance.LargeurPlateau, BoardManager.Instance.HauteurPlateau];
 
-		r = LigneDroitePossibleMoves (r, 1, 1);
-		r = LigneDroitePossibleMoves (r, 1, -1);
-		r = LigneDroitePossibleMoves (r, 0, 1);
-		r = LigneDroitePossibleMoves (r, 0, -1);
+		r = LigneDroitePossibleMoves (r, 1, 1);//Vertical haut
+		r = LigneDroitePossibleMoves (r, 1, -1);//Vertical bas
+		r = LigneDroitePossibleMoves (r, 0, 1);//Horizontal droite
+		r = LigneDroitePossibleMoves (r, 0, -1);//Horizontal gauche
 
 		return r;
 	}

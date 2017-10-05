@@ -6,7 +6,7 @@ using System.Linq;
 public class Deck : MonoBehaviour{
 	public Card[,] CardsAndPlaces;
 
-	public List<Card> Cartes;
+	public List<NormalCard> Cartes;
 	public List<IntInt> Emplacements;
 	public List<int> CartesId;
 	public List<int> Abscisses;

@@ -10,8 +10,8 @@ public class ButtonManager : MonoBehaviour {
 	public static ButtonManager Instance{ get; set;}
 
 	public void DragAndDrop(Card c, GameObject sender){
-		try{(sender.GetComponent ("Halo") as Behaviour).enabled = true;}
-		catch{}
+		//try{(sender.GetComponent ("Halo") as Behaviour).enabled = true;}
+		//catch{}
 		CreationBoardManager.Instance.selectedCard = null;
 		CreationBoardManager.Instance.DragedCard = Instantiate(c);
 		CreationBoardManager.Instance.DragedCard.transform.position = Input.mousePosition;
@@ -26,17 +26,19 @@ public class ButtonManager : MonoBehaviour {
 		Deck d = CreationBoardManager.Instance.NewDeck;
 		d.Abscisses = new List<int> ();
 		d.Ordonnées = new List<int> ();
-		d.Cartes = new List<Card> ();
+		d.PorteurDrapeau = new List<bool> ();
+		d.Cartes = new List<NormalCard> ();
 		foreach (Card c in CreationBoardManager.Instance.CardBoard) {
 			if (c != null) {
 				d.Abscisses.Add (c.CurrentX); 
 				d.Ordonnées.Add (c.CurrentY);
 				d.CartesId.Add (c.Id);
 				d.PorteurDrapeau.Add (c.PorteDrapeau);
+				d.Cartes.Add (c as NormalCard);
 			}
 		}
 		//Object NewDeck
-		/*System.Object prefab = */PrefabUtility.CreatePrefab("Assets/Deck/"+DeckName.text+".prefab",CreationBoardManager.Instance.NewDeck.gameObject);
+		/*System.Object prefab = */PrefabUtility.CreatePrefab("Assets/Resources/Decks/"+DeckName.text+".prefab",CreationBoardManager.Instance.NewDeck.gameObject);
 	}
 
 	public void NewGameBtn (string NewGame) {
